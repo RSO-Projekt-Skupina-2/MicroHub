@@ -16,10 +16,10 @@ MicroHub ponuja rešitev v obliki minimalistične spletne platforme, ki se osred
 ## Ogrodje in razvojno okolje:
 
 ### Frontend:
-- **React (TypeScript, Vite):** za izdelavo uporabniškega vmesnika naše spletne aplikacije. Uporabniški vmesnik bo z mikrostoritvami komuniciral preko REST API klicev.
+- **React (TypeScript, Vite):** za izdelavo uporabniškega vmesnika naše spletne aplikacije. Uporabniški vmesnik bo z mikrostoritvami komuniciral preko REST API klicev. Prav tako bo klical tudi potrebne zunanje API-je (npr. DiceBear za avatarje in profilne slike).
 
 ### Backend (mikrostoritve):
-- **Node.js (TypeScript):** izvajalno okolje, v katerem bodo delovale vse mikrostoritve. Vsaka mikrostoritev (Users, Posts, Like, ...) bo samostojen Node.js program, zapakiran v Docker kontejner.
+- **Node.js (TypeScript):** izvajalno okolje, v katerem bodo delovale vse mikrostoritve. Vsaka mikrostoritev (Users, Posts, Likes, ...) bo samostojen Node.js program, zapakiran v Docker kontejner.
 - **Express.js:** knjižnica, ki bo uporabljena znotraj vsake mikrostoritve za definiranje REST endpointov, obdelavo HTTP zahtev, validacijo in obdelavo podatkov ter komunikacijo z drugimi mikrostoritvami in bazo.
 
 ### Podatkovna baza:
@@ -35,13 +35,14 @@ MicroHub ponuja rešitev v obliki minimalistične spletne platforme, ki se osred
 - **GitHub:** Služil bo kot repozitoriji za shranjevanje, deljenje in verzioniranje izvorne kode, sodelovanje med člani ekipe, CI/CD avtomatizacijo in dokumentacijo projekta.
 
 ## Shema arhitekture:
+![Začetna shema arhitekture aplikacije MicroHub](/zacetnaShema.jpg)
 
 ## Seznam funkcionalnosti mikrostoritev:
-### 1. Users & Authentication
+### 1. Users
 Mikrostoritev za kreiranje, upravljanje in avtentikacijo uporabnikov. Skrbi za registracijo, prijavo, varno shranjevanje gesel ter razmerja med uporabniki (npr. prijateljstva, sledenje).
 
 Glavne funkcionalnosti:
-- Registracija novega uporabnika (email, uporabniško ime, geslo)
+- Registracija novega uporabnika (e-pošta, uporabniško ime, geslo)
 - Prijava in avtentikacija uporabnika (npr. preko izdaje JWT žetonov)
 - Preverjanje in obnavljanje prijave (session management)
 - Sledenje in prenehanje sledenja drugim uporabnikom: pošiljanje sporočila **user.followed** mikrostoritvi za obvestila
@@ -61,7 +62,7 @@ Glavne funkcionalnosti:
 - Shranjevanje metapodatkov za vsako objavo (npr. število všečkov, komentarjev)
 
 ### 3. Likes
-Mikrostoritev za všečkanje objav
+Mikrostoritev za všečkanje objav.
 
 Glavne funkcionalnosti:
 - Dodajanje in odstranjevanje všečka na objavi
@@ -70,7 +71,7 @@ Glavne funkcionalnosti:
 - Pošilanje sporočila **post.liked** mikrostoritvi za obvestila
 
 ### 4. Comments
-Mikrostoritev, ki omogoča komentiranje objav
+Mikrostoritev, ki omogoča komentiranje objav.
 
 Glavne funkcionalnosti:
 - Dodajanje komentarjev pod objavo
@@ -95,7 +96,7 @@ Mikrostoritev za prikazovanje svojega osebnega profila oziroma profila prijatelj
 Glavne funkcionalnosti:
 - Prikaz podatkov o uporabniku (javna stran profila)
 - Urejanje uporabniškega profila (opis, slika, ime, lokacija ipd.)
-- Pridobivanje osnovne statistike profila: število objav, všečkov, komentarjev
+- Pridobivanje osnovne statistike profila - število objav, všečkov, komentarjev
 - Pridobivanje seznama sledilcev in sledenih uporabnikov
 - Generiranje tedenskih ali mesečnih poročil o aktivnosti
 - Agregacija podatkov iz *Posts*, *Likes* in *Comments* storitev
@@ -111,7 +112,7 @@ Uporabnik izpolni obrazec za registracijo (uporabniško ime, e-pošta, geslo). M
 Uporabnik vnese prijavne podatke. Mikrostoritev *Users* preveri uporabniško ime in geslo, ustvari JWT žeton (avtentikacija) ter ga pošlje aplikaciji, ki ga uporablja za izvajanje nadaljnjih zahtev.
 
 #### 3. Ustvarjanje objave
-Uporabnik napiše besedilo objave in po želji doda sliko. Mikrostoritev *Posts* shrani objavo v bazo in sproži asinhroni dogodek **post.created**, ki ga kasneje uporabijo *Notifications* in ** User Profiles** mikrostoritve.
+Uporabnik napiše besedilo objave in po želji doda sliko. Mikrostoritev *Posts* shrani objavo v bazo in sproži asinhroni dogodek **post.created**, ki ga kasneje uporabijo *Notifications* in *User Profiles* mikrostoritve.
 
 #### 4. Všečkanje objave
 Uporabnik klikne gumb za "všečkanje" objave. Mikrostoritev *Likes* zabeleži všeček v bazi in sproži dogodek **post.liked**, ki ga *Notifications* uporabi za obvestilo avtorju objave.
@@ -137,7 +138,7 @@ Akterji:
 Opis scenarija:
 1. Uporabnik B na uporabniškem vmesniku svoje aplikacije klikne “Všečkaj” pod objavo uporabnika A.
 2. Uporabniški vmesnik preko REST API klicev mikrostoritve obvesti o dogodku (npr. **POST /api/v1/posts/:id/like**).
-4. Mikrostoritev *Users & Authentication* ustrezno identificira prejemnika dogodka - všečkanje objave.
+4. Mikrostoritev *Users* ustrezno identificira prejemnika dogodka - všečkanje objave.
 3. Mikrostoritev *Likes* zabeleži všeček v bazo in pošlje sporočilo **post.liked**.
 4. Sporočilo **post.liked** se pošlje prek message brokerja (npr. RabbitMQ).
 5. Mikrostoritev *Notifications* prejme dogodek, ustvari obvestilo za uporabnika A in ga shrani v svojo bazo.
@@ -147,5 +148,5 @@ Opis scenarija:
 Vključene mikrostoritve:
 - **Likes:** logika za všečkanje objave
 - **Notifications:** prejem dogodka in ustvarjanje obvestila
-- **Users & Authentication:** identifikacija prejemnika obvestila
+- **Users:** identifikacija prejemnika obvestila
 - **User Profiles:** posodobitev statistike

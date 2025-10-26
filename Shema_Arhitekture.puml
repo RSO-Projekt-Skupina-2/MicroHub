@@ -1,0 +1,67 @@
+@startuml
+title MicroHub - Microservices Architecture (Hub Devs - Skupina 2)
+
+skinparam componentStyle rectangle
+
+actor User as "User (Browser / Mobile)"
+
+node "Azure Cloud / Kubernetes" as cluster {
+  node "Ingress / API Gateway\n(HTTPS, JWT auth)" as APIGW
+  node "Kubernetes Cluster" {
+    component Users as "Users & Auth Service\n(Node.js + Express)\nIssues JWT" 
+    component Posts as "Posts Service\n(Node.js + Express)" 
+    component Likes as "Likes Service\n(Node.js + Express)"
+    component Comments as "Comments Service\n(Node.js + Express)"
+    component Notifications as "Notifications Service\n(Node.js + Express)\nConsumes events (AMQP)\nPushes realtime (WebSocket/SSE)"
+    component Profiles as "User Profiles Service\n(Aggregation)\nQuery via REST + event-subscriber"
+    component Rabbit as "Message Broker (RabbitMQ)\n(AMQP)"
+  }
+}
+
+database UsersDB as "PostgreSQL - users_schema"
+database PostsDB as "PostgreSQL - posts_schema"
+database LikesDB as "PostgreSQL - likes_schema"
+database CommentsDB as "PostgreSQL - comments_schema"
+database NotificationsDB as "PostgreSQL - notifications_schema"
+database ProfilesDB as "PostgreSQL - profiles_schema"
+
+User --> APIGW : "HTTPS (REST) JSON\nLogin / Actions / Feed"
+APIGW --> Users : "HTTPS REST\nAuthorization: Bearer <JWT>\n(Validate / Register / Login)"
+APIGW --> Posts : "HTTPS REST\n(POST/GET/PUT/DELETE)"
+APIGW --> Likes : "HTTPS REST\n(POST/DELETE)"
+APIGW --> Comments : "HTTPS REST\n(POST/GET/DELETE)"
+APIGW --> Profiles : "HTTPS REST\n(Get profile / stats)"
+
+Users --> UsersDB : "SQL (Postgres)"
+Posts --> PostsDB : "SQL (Postgres)"
+Likes --> LikesDB : "SQL (Postgres)"
+Comments --> CommentsDB : "SQL (Postgres)"
+Notifications --> NotificationsDB : "SQL (Postgres)"
+Profiles --> ProfilesDB : "SQL (Postgres)"
+
+Posts -> Rabbit : "post.created (AMQP)"
+Likes -> Rabbit : "post.liked (AMQP)"
+Comments -> Rabbit : "post.commented (AMQP)"
+Users -> Rabbit : "user.followed (AMQP)"
+
+Rabbit --> Notifications : "subscribe events\n(post.created, post.liked,\npost.commented, user.followed)"
+Notifications --> APIGW : "Push realtime\nvia WebSocket/SSE\nor notify frontend"
+Notifications -> "External Email/Push" : "SMTP / FCM/APNS\n(optional)"
+Profiles --> Posts : "HTTPS REST (on-demand)\nOR keep local cache via events"
+Profiles --> Likes : "HTTPS REST\nOR subscribe to events"
+Profiles --> Comments : "HTTPS REST\nOR subscribe to events"
+
+APIGW --> "Static CDN / Blob Storage" : "GET/PUT (media uploads)\n(HTTPS, e.g. Azure Blob Storage)"
+
+note right of APIGW
+  API Gateway performs:
+  - TLS termination (HTTPS)
+  - JWT verification (via Users service or introspection)
+  - Routing to microservices
+  - Rate limiting / Authn / Authz
+end note
+
+cloud "Azure Kubernetes Service (AKS)\nDocker images, k8s Deployments/Services" as AzureCloud
+AzureCloud .. cluster
+
+@enduml
