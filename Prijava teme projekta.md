@@ -35,7 +35,7 @@ MicroHub ponuja rešitev v obliki minimalistične spletne platforme, ki se osred
 - **GitHub:** Služil bo kot repozitoriji za shranjevanje, deljenje in verzioniranje izvorne kode, sodelovanje med člani ekipe, CI/CD avtomatizacijo in dokumentacijo projekta.
 
 ## Shema arhitekture:
-![Začetna shema arhitekture aplikacije MicroHub](/zacetnaShema.jpg)
+![Začetna shema arhitekture aplikacije MicroHub](zacetnaShema.jpg)
 
 ## Seznam funkcionalnosti mikrostoritev:
 ### 1. Users
