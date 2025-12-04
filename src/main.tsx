@@ -5,6 +5,8 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import './styles/index.css'
 import LoginPage from './pages/LoginPage'
 import FeedPage from './pages/FeedPage'
+import ProfilePage from './pages/ProfilePage'
+import CreatePost from './pages/CreatePost'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -12,6 +14,8 @@ createRoot(document.getElementById('root')!).render(
         <Routes>
           <Route path="/" element={<FeedPage />}/>
           <Route path="/login" element={<LoginPage/>}/>
+          <Route path="/profile" element={<ProfilePage/>}/>
+          <Route path="/newPost" element={<CreatePost/>}/>
         </Routes>
       </BrowserRouter>
   </StrictMode>,

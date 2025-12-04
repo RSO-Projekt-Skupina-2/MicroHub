@@ -6,17 +6,18 @@ import Col from "react-bootstrap/Col";
 import CreatePostIcon from "../assets/Pencil 01.svg";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState,  } from "react";
 import MainHeader from "../components/mainHeader";
 import SearchComponent from "../components/searchComponent";
 import FeedCard from "../components/feedCard";
+import { getPosts, Post } from "../api";
 
 
 const FeedPage = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState<string>("Welcome to the feed!");
   const [message, setMessage] = useState<string>("");
-  //const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
 
   const searchTopic = async (topic: string) => {
     if (topic.length === 0) {
@@ -33,13 +34,16 @@ const FeedPage = () => {
 
   async function loadPosts() {
     try {
-      
+      var posts = await getPosts()
+      setPosts(posts)
     } catch (error) {
       console.error("Failed to load posts:", error);
     }
   }
 
-
+  useEffect(() => {
+    loadPosts()
+  }, [])
 
   return(
     <div className="feed-page size_and_colors w-100">
@@ -53,15 +57,16 @@ const FeedPage = () => {
             <Container>
               <SearchComponent onSearch={searchTopic} />
               <h2 className="header-text">{title}</h2>
-              
-                <FeedCard
-                  key={1}
-                  title={"Title"}
-                  text={"TEXt"}
-                  topics={["topic"]}
-                  postId={2}
-                  user={"user"}
-                />
+              {posts.map((post) => (
+              <FeedCard
+                key={post.id}
+                title={post.title}
+                text={post.text}
+                topics={post.topics}
+                postId={post.id}
+                user={post.author}
+              />
+            ))}
             </Container>
           </Col>
           <Col xs={2} className="sidebar"></Col>
