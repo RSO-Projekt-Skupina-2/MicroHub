@@ -42,7 +42,7 @@ function ProfilePage() {
             <Container className="mt-5 align-items-center d-flex flex-column justify-content-center">
 
                 <h1 className="text-center">Profile</h1>
-                <Row className="mt-5" style={{ maxWidth: '700px', width: '100%', padding: '20px', backgroundColor: '#E5DCDF' }}>
+                <Row className="mt-5" style={{ maxWidth: '700px', width: '100%', padding: '20px', backgroundColor: '#BFDBFE' }}>
 
                     <Col md={4} className="text-center" style={{ paddingTop: '10px'}}>
                         <img
