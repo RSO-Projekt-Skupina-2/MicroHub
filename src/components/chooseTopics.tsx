@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Form, Row, Col } from "react-bootstrap";
+import { Button, Form, Row, Col, InputGroup } from "react-bootstrap";
 import TopicCard from "./topicCard";
 
 interface ChooseTopicsProps {
@@ -35,8 +35,10 @@ function ChooseTopics({ onTopicsUpdate }: ChooseTopicsProps) {
         <>
             <Row style={{ marginBottom: "20px", marginTop: "20px" }}>
                 <Col>
-                    <Form.Control type="text" value={topic} placeholder="Enter topic" onChange={(e) => { setTopic(e.target.value) }} />
-                    <Button onClick={() => { addTopic(topic) }} style={{ marginTop: "10px" }}>Add topic</Button>
+                    <div className="d-flex gap-2 align-items-center">
+                        <Form.Control type="text" value={topic} placeholder="Enter topic" onChange={(e) => { setTopic(e.target.value) }} />
+                        <Button style={{ whiteSpace: "nowrap" }} onClick={() => { addTopic(topic) }}>Add topic</Button>
+                    </div>
                 </Col>
                 <Col>
                     {topics.map(topic => (
