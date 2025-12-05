@@ -33,7 +33,9 @@ function MainHeader() {
           >
             <img src={UserIcon} alt="User icon" />
           </Nav.Link>
-          <Nav.Link data-testid="log-out-btn">
+          <Nav.Link data-testid="log-out-btn" 
+            onClick={() => navigateTo("/login")}
+          >
             <img src={Logout} alt="Log-out icon" />
           </Nav.Link>
         </Nav>
