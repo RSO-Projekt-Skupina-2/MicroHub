@@ -53,7 +53,7 @@ function FeedCard({ title, text, topics = [], postId, user }: FeedCardProps) {
           <header className="header-text">{title}</header>
         </Col>
         <Col className="justify-content-end d-flex align-items-center">
-          <img src={UserIcon} alt="User Icon" className="img" width="50" />
+          <img src={`https://api.dicebear.com/9.x/identicon/svg?seed=${user}`} alt="User Icon" className="img" width="50" />
           <header style={{margin: 10}}> {user}</header>
         </Col>
       </Row>
