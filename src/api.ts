@@ -10,11 +10,15 @@ export type Post = {
   topics: string[];
 };
 
-const BASE_URL = "http://localhost:8080";
-
+const POSTS_URL = import.meta.env.VITE_POSTS_SERVICE_URL;
 
 export async function getPosts(): Promise<Post[]> {
-  const response = await axios.get<Post[]>(`${BASE_URL}/posts`);
-  console.log(response.data);
-  return response.data;
+  try {
+    const response = await axios.get<Post[]>(`${POSTS_URL}/posts`);
+    console.log("Posts:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error(`Failed to fetch from ${POSTS_URL}/posts:`, error);
+    throw error;
+  }
 }
