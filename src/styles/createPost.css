@@ -11,6 +11,20 @@
     z-index: 9999;  /* Ensure it's on top */
 }
 
+.page-wrapper {
+    min-height: 100vh;
+    background-color: #f1f1f1;
+}
+
+.content-box {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    padding: 40px;
+    max-width: 700px;
+    width: 100%;
+}
+
 .create-post-container {
     max-width: 1000px;  /* ✅ Limits the width to 300px */
     padding-left: 10%;

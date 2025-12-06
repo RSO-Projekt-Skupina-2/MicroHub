@@ -93,7 +93,7 @@ const LoginForm = () => {
 
         <Form.Group className="my-2 justify-content-md-end">
           <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-            <Button variant="secondary" type="submit" onClick={handleSubmit}>
+            <Button variant="secondary" type="submit" onClick={() => navigate("/")}>
               Log in
             </Button>
             <Button
