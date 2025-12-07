@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import MainHeader from '../components/mainHeader';
-import '../styles/CreatePost.css'
+import '../styles/createPost.css'
 import '../styles/feed.css'
 import { useNavigate } from 'react-router-dom'
 import { Container } from 'react-bootstrap';

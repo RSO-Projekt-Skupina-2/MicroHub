@@ -1,31 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: microhub-demo
+  name: microhub-frontend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: microhub-demo
+      app: microhub-frontend
   template:
     metadata:
       labels:
-        app: microhub-demo
+        app: microhub-frontend
     spec:
       containers:
-      - name: microhub-demo
-        image: microhubacr.azurecr.io/microhub-demo:1.0
+      - name: microhub-frontend
+        image: microhubacr.azurecr.io/microhub-frontend:2.2
         ports:
         - containerPort: 3000
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: microhub-demo-service
+  name: microhub-frontend-service
 spec:
   type: LoadBalancer
   selector:
-    app: microhub-demo
+    app: microhub-frontend
   ports:
   - port: 80
     targetPort: 3000
