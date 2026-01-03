@@ -37,5 +37,6 @@ jobs:
 
     - name: Deploy to Kubernetes
       run: |
-        kubectl set image deployment/frontend \
-        frontend=${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        kubectl set image deployment/microhub-frontend \
+        microhub-frontend=${{ secrets.ACR_LOGIN_SERVER }}/microhub-frontend:${{ github.sha }} \
+        -n ingress
