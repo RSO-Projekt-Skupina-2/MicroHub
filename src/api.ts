@@ -24,7 +24,7 @@ export async function getPosts(): Promise<Post[]> {
 }
 
 // Klic serverless funkcije
-const HEALTH_URL = import.meta.env.VITE_HEALTH_URL;
+const HEALTH_URL = import.meta.env.VITE_SERVERLESS_FUNCTION_URL;
 
 export type HealthStatus = {
   status: string;
