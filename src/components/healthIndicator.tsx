@@ -6,7 +6,6 @@ export function HealthIndicator() {
   const [health, setHealth] = useState<HealthStatus | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Funkcija za osvežitev health statusa
   const fetchHealth = async () => {
     setLoading(true);
     const data = await getHealth();
@@ -15,11 +14,9 @@ export function HealthIndicator() {
   };
 
   useEffect(() => {
-    // Prvi klic ob mountu
     fetchHealth();
 
-    // Polling vsako 30s
-    const interval = setInterval(fetchHealth, 30000);
+    const interval = setInterval(fetchHealth, 60000);
 
     return () => clearInterval(interval);
   }, []);
@@ -38,6 +35,5 @@ export function HealthIndicator() {
       {statusText}
     </span>
     </div>
-    
   );
 }
