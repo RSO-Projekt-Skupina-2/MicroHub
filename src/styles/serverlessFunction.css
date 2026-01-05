@@ -1,0 +1,23 @@
+.health-status {
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-left: 0.5rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.25rem;
+  display: inline-block;
+}
+
+.health-status.ok {
+  color: #155724;
+  background-color: #d4edda;
+}
+
+.health-status.down {
+  color: #721c24;
+  background-color: #f8d7da;
+}
+
+.health-status.loading {
+  color: #856404;
+  background-color: #fff3cd;
+}

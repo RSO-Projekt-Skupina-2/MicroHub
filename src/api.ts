@@ -27,26 +27,26 @@ export async function getPosts(): Promise<Post[]> {
 const HEALTH_URL = import.meta.env.VITE_SERVERLESS_FUNCTION_URL;
 
 export type HealthStatus = {
-  status: string;
+  status: "ok" | "down";
   service: string;
   component: string;
   timestamp: string;
 };
 
+// Funkcija za klic Azure Function
 export async function getHealth(): Promise<HealthStatus> {
   try {
     const response = await axios.get<HealthStatus>(HEALTH_URL, {
       withCredentials: false
     });
-    console.log("Health:", response.data);
     return response.data;
   } catch (error) {
-    console.error(`Failed to fetch from ${HEALTH_URL}:`, error);
+    console.error("Failed to fetch health:", error);
     return {
       status: "down",
       service: "microhub",
       component: "health-function",
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 }
