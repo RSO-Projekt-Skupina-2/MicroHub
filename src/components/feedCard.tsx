@@ -10,13 +10,14 @@ interface FeedCardProps {
   text: string;
   topics?: string[];
   postId: number;
-  user: string;
+  user: string | number;
 }
 
 function FeedCard({ title, text, topics = [], postId, user }: FeedCardProps) {
   const [likeCount, setLikeCount] = useState<number>(0);
   const [liked, setLiked] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const username = String(user ?? "User");
 
   useEffect(() => {
     const fetchLikeData = async () => {
@@ -53,8 +54,8 @@ function FeedCard({ title, text, topics = [], postId, user }: FeedCardProps) {
           <header className="header-text">{title}</header>
         </Col>
         <Col className="justify-content-end d-flex align-items-center">
-          <img src={`https://api.dicebear.com/9.x/identicon/svg?seed=${user}`} alt="User Icon" className="img" width="50" />
-          <header style={{margin: 10}}> {user}</header>
+          <img src={`https://api.dicebear.com/9.x/identicon/svg?seed=${username}`} alt="User Icon" className="img" width="50" />
+          <header style={{margin: 10}}> {username}</header>
         </Col>
       </Row>
       <Row>

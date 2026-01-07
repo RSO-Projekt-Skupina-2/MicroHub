@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth";
 
 const CreateUserForm = () => {
+  const { register } = useAuth();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [notification, setNotification] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,20 +22,23 @@ const CreateUserForm = () => {
     event.preventDefault();
 
     try {
-      //await createUser(email, password, username);
+      setIsSubmitting(true);
+      await register({ email, password, username });
       setEmail("");
       setUsername("");
       setPassword("");
       setNotification("User created successfully!");
       navigate("/");
     } catch (error: any) {
-      if(error.status === 409){
-        setNotification("Username already exists. Please try again with a different username.");
-        return
-      } 
-      setNotification("Failed to create user. Please try again.");
+      const errorMessage =
+        error?.response?.data?.error ||
+        (error?.status === 409
+          ? "Username already exists. Please try again with a different username."
+          : "Failed to create user. Please try again.");
+      setNotification(errorMessage);
       console.error("Failed to create user:", error);
-      console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -74,8 +80,8 @@ const CreateUserForm = () => {
           />
         </div>
         <div className="d-grid">
-          <button type="submit" className="btn btn-primary" data-testid = "create-user-btn">
-            Create user
+          <button type="submit" className="btn btn-primary" data-testid = "create-user-btn" disabled={isSubmitting}>
+            {isSubmitting ? "Creating..." : "Create user"}
           </button>
         </div>
       </form>

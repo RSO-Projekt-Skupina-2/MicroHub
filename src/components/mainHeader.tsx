@@ -4,11 +4,12 @@ import UserIcon from "../assets/User Profile 02.svg";
 import "../styles/feed.css";
 import { Navbar, Container, Nav } from "react-bootstrap";
 import { useNavigate } from "react-router";
-import { HealthIndicator } from "./healthIndicator";
+import { useAuth } from "../auth";
 
 
 function MainHeader() {
   const navigate = useNavigate();
+  const { logout, user } = useAuth();
 
   const navigateTo = async (path: string) => {
     navigate(path);
@@ -27,13 +28,13 @@ function MainHeader() {
       MicroHub
     </Navbar.Brand>
 
-    {/* Health status */}
-    <div className="ms-3 me-auto">
-      <HealthIndicator />
-    </div>
-
     {/* Right side: Icons */}
     <Nav className="ms-auto">
+      {user && (
+        <Nav.Item className="d-flex align-items-center me-3 text-white">
+          {user.username}
+        </Nav.Item>
+      )}
       <Nav.Link
         onClick={() => navigateTo("/profile")}
         data-testid="profile-btn"
@@ -42,7 +43,10 @@ function MainHeader() {
       </Nav.Link>
       <Nav.Link
         data-testid="log-out-btn"
-        onClick={() => navigateTo("/login")}
+        onClick={() => {
+          logout();
+          navigateTo("/login");
+        }}
       >
         <img src={Logout} alt="Log-out icon" />
       </Nav.Link>

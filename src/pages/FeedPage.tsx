@@ -6,7 +6,7 @@ import Col from "react-bootstrap/Col";
 import CreatePostIcon from "../assets/Pencil 01.svg";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState,  } from "react";
+import { useEffect, useState, useRef } from "react";
 import MainHeader from "../components/mainHeader";
 import SearchComponent from "../components/searchComponent";
 import FeedCard from "../components/feedCard";
@@ -15,34 +15,36 @@ import { getPosts, Post } from "../api";
 
 const FeedPage = () => {
   const navigate = useNavigate();
-  const [title, setTitle] = useState<string>("Welcome to the feed!");
+  const [title, setTitle] = useState<string>("All posts");
   const [message, setMessage] = useState<string>("");
   const [posts, setPosts] = useState<Post[]>([]);
+  const [currentTopic, setCurrentTopic] = useState<string>("");
+  const hasFetched = useRef(false);
 
   const searchTopic = async (topic: string) => {
+    setCurrentTopic(topic);
     if (topic.length === 0) {
       setTitle("All posts");
-      return;
-    }
-    try {
-      
+    } else {
       setTitle("Topic: " + topic);
-    } catch (error) {
-      console.error("Failed to load posts:", error);
     }
+    await loadPosts(topic);
   };
 
-  async function loadPosts() {
+  async function loadPosts(topic?: string) {
     try {
-      var posts = await getPosts()
-      setPosts(posts)
+      const posts = await getPosts(topic);
+      setPosts(posts);
     } catch (error) {
       console.error("Failed to load posts:", error);
     }
   }
 
   useEffect(() => {
-    loadPosts()
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      loadPosts();
+    }
   }, [])
 
   return(
@@ -64,7 +66,7 @@ const FeedPage = () => {
                 text={post.text}
                 topics={post.topics}
                 postId={post.id}
-                user={post.author}
+                user={post.authorName || post.author}
               />
             ))}
             </Container>

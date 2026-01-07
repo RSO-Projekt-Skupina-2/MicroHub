@@ -5,6 +5,7 @@ import '../styles/feed.css'
 import { useNavigate } from 'react-router-dom'
 import { Container } from 'react-bootstrap';
 import ChooseTopics from '../components/chooseTopics';
+import { createPost } from '../api';
 
 export function CreatePost() {
   const [postContent, setPostContent] = useState<string>("");
@@ -12,7 +13,7 @@ export function CreatePost() {
   const [topics, setTopics] = useState<string[]>([]);
   const [alert, setAlert] = useState({ message: "", type: "" });
   //const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
-  const [message, setMessage] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const [resetKey, setResetKey] = useState<number>(0);
@@ -62,9 +63,26 @@ export function CreatePost() {
             </button>
             <button
               className="btn btn-primary"
-              disabled={!postContent.trim() || !postTitle.trim()}
+              disabled={!postContent.trim() || !postTitle.trim() || isSubmitting}
+              onClick={async () => {
+                try {
+                  setIsSubmitting(true);
+                  await createPost({ title: postTitle.trim(), text: postContent.trim(), topics });
+                  setAlert({ message: "Post created successfully", type: "success" });
+                  setPostContent("");
+                  setPostTitle("");
+                  setTopics([]);
+                  setResetKey((prev) => prev + 1);
+                  navigate("/");
+                } catch (error: any) {
+                  const message = error?.response?.data?.error || error?.message || "Failed to create post";
+                  setAlert({ message, type: "danger" });
+                } finally {
+                  setIsSubmitting(false);
+                }
+              }}
             >
-              Submit Post
+              {isSubmitting ? "Submitting..." : "Submit Post"}
             </button>
           </div>
         </div>

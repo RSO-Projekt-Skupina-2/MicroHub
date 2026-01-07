@@ -3,24 +3,27 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import "../styles/index.css";
 import { useEffect, useState } from "react";
+import { useAuth } from "../auth";
 
 const LoginForm = () => {
   interface Errors {
-    username?: string;
+    email?: string;
     password?: string;
     serverError?: string;
   }
 
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
+  const { login } = useAuth();
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [notification, setNotification] = useState("");
   const [errors, setErrors] = useState<Errors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    if (name === "username") setUsername(value);
+    if (name === "email") setEmail(value);
     if (name === "password") setPassword(value);
   };
 
@@ -28,8 +31,8 @@ const LoginForm = () => {
     if (event) event.preventDefault();
     let newErrors: Errors = {};
 
-    if (username.length === 0) {
-      newErrors.username = "Username must not be empty";
+    if (email.length === 0) {
+      newErrors.email = "Email must not be empty";
     }
     if (password.length === 0) {
       newErrors.password = "Password must not be empty";
@@ -39,21 +42,17 @@ const LoginForm = () => {
       setErrors(newErrors);
       return;
     }
-
-    // const loginResult = await login(username, password);
-    // if (loginResult === LoginResult.INVALID_CREDENTIALS) {
-    //   newErrors.username = "Username or password invalid";
-    // }
-    // if (loginResult === LoginResult.SERVER_ERROR) {
-    //   newErrors.serverError =
-    //     "An error occurred while processing your request. Please try again later.";
-    // }
-    // if (loginResult === LoginResult.SUCCESS) {
-    //   navigate("/");
-    //   return;
-    // }
-    navigate("/")
-    setErrors(newErrors);
+    try {
+      setIsSubmitting(true);
+      await login(email, password);
+      navigate("/");
+    } catch (error: any) {
+      const serverError = error?.response?.data?.error || error?.message || "Failed to log in";
+      newErrors.serverError = serverError;
+      setErrors(newErrors);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -68,13 +67,13 @@ const LoginForm = () => {
     <>
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3">
-          <label htmlFor="username">Username</label>
+          <label htmlFor="email">Email</label>
           <Form.Control
-            id="username"
-            type="text"
-            placeholder="Enter your username"
-            name="username"
-            value={username}
+            id="email"
+            type="email"
+            placeholder="Enter your email"
+            name="email"
+            value={email}
             onChange={handleChange}
           />
         </Form.Group>
@@ -93,8 +92,8 @@ const LoginForm = () => {
 
         <Form.Group className="my-2 justify-content-md-end">
           <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-            <Button variant="secondary" type="submit" onClick={() => navigate("/")}>
-              Log in
+            <Button variant="secondary" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Logging in..." : "Log in"}
             </Button>
             <Button
               variant="outline-secondary"
