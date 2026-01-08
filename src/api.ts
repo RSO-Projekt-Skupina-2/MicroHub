@@ -94,7 +94,6 @@ export async function getHealth(): Promise<HealthStatus> {
     });
     return response.data;
   } catch (error) {
-    // Silently return down status for CORS/network errors
     return {
       status: "down",
       service: "microhub",
