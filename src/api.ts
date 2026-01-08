@@ -2,8 +2,8 @@ import axios from "axios";
 
 axios.defaults.withCredentials = true;
 
-const POSTS_URL = import.meta.env.VITE_POSTS_SERVICE_URL || "http://localhost:3000";
-const USERS_URL = import.meta.env.VITE_USERS_SERVICE_URL || "http://localhost:3002";
+const POSTS_URL = import.meta.env.VITE_POSTS_SERVICE_URL;
+const USERS_URL = import.meta.env.VITE_USERS_SERVICE_URL;
 const HEALTH_URL = import.meta.env.VITE_SERVERLESS_FUNCTION_URL;
 const TOKEN_STORAGE_KEY = "microhub.auth.token";
 

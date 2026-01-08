@@ -17,6 +17,20 @@ spec:
             name: microhub-posts-service
             port:
               number: 8080
+      - path: /users
+        pathType: Prefix
+        backend:
+          service:
+            name: microhub-users-service
+            port:
+              number: 3002
+      - path: /likes
+        pathType: Prefix
+        backend:
+          service:
+            name: microhub-likes-service
+            port:
+              number: 3001
       # Frontend catch-all (MUST be last)
       - path: /
         pathType: Prefix
