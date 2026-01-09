@@ -5,6 +5,7 @@ import "../styles/feed.css";
 import { Navbar, Container, Nav } from "react-bootstrap";
 import { useNavigate } from "react-router";
 import { useAuth } from "../auth";
+import { HealthIndicator } from "./healthIndicator";
 
 
 function MainHeader() {
@@ -27,6 +28,11 @@ function MainHeader() {
       <img src={logoIcon} alt="App Logo" className="me-3" />
       MicroHub
     </Navbar.Brand>
+    
+     {/* Health status */}
+    <div className="ms-3 me-auto">
+      <HealthIndicator />
+    </div>
 
     {/* Right side: Icons */}
     <Nav className="ms-auto">
