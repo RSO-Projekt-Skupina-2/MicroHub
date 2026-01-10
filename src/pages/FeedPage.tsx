@@ -67,6 +67,8 @@ const FeedPage = () => {
                 topics={post.topics}
                 postId={post.id}
                 user={post.authorName || post.author}
+                authorId={typeof post.author === 'number' ? post.author : parseInt(String(post.author))}
+                onDelete={() => loadPosts(currentTopic)}
               />
             ))}
             </Container>

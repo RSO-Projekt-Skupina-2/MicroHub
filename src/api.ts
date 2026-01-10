@@ -69,6 +69,10 @@ export async function createPost(payload: {
   return response.data;
 }
 
+export async function deletePost(postId: number): Promise<void> {
+  await axios.delete(`${POSTS_URL}/posts/${postId}`);
+}
+
 export async function login(email: string, password: string): Promise<LoginResponse> {
   const response = await axios.post<LoginResponse>(`${USERS_URL}/users/login`, {
     email,

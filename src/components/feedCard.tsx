@@ -4,6 +4,8 @@ import "../styles/feed.css";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { Button } from "react-bootstrap";
+import { useAuth } from "../auth";
+import { deletePost } from "../api";
 
 interface FeedCardProps {
   title: string;
@@ -11,13 +13,18 @@ interface FeedCardProps {
   topics?: string[];
   postId: number;
   user: string | number;
+  authorId?: number;
+  onDelete?: () => void;
 }
 
-function FeedCard({ title, text, topics = [], postId, user }: FeedCardProps) {
+function FeedCard({ title, text, topics = [], postId, user, authorId, onDelete }: FeedCardProps) {
   const [likeCount, setLikeCount] = useState<number>(0);
   const [liked, setLiked] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<boolean>(false);
+  const { user: currentUser } = useAuth();
   const username = String(user ?? "User");
+  const isOwner = currentUser && authorId && Number(currentUser.id) === Number(authorId);
 
   useEffect(() => {
     const fetchLikeData = async () => {
@@ -32,6 +39,22 @@ function FeedCard({ title, text, topics = [], postId, user }: FeedCardProps) {
 
     fetchLikeData();
   }, [postId]);
+
+  const handleDelete = async () => {
+    if (!confirm("Are you sure you want to delete this post?")) {
+      return;
+    }
+
+    try {
+      setDeleting(true);
+      await deletePost(postId);
+      onDelete?.();
+    } catch (error) {
+      console.error("Failed to delete post:", error);
+      setError("Failed to delete post");
+      setDeleting(false);
+    }
+  };
 
   const handleLike = async () => {
     try {
@@ -79,6 +102,19 @@ function FeedCard({ title, text, topics = [], postId, user }: FeedCardProps) {
           </Button>
           <span>{likeCount} Likes</span>{" "}
         </Col>
+        {isOwner && (
+          <Col className="d-flex justify-content-end align-items-center">
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={handleDelete}
+              disabled={deleting}
+              className="mx-2"
+            >
+              {deleting ? "✕ Deleting..." : "✕ Delete"}
+            </Button>
+          </Col>
+        )}
       </Row>
       {error && <div className="alert alert-danger">{error}</div>}
     </div>
