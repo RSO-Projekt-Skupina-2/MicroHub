@@ -4,7 +4,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { Button, Form } from "react-bootstrap";
 import { useAuth } from "../auth";
-import { deletePost, getComments, createComment, deleteComment, Comment, getLikeStatus, getLikeCount, likePost, unlikePost } from "../api";
+import { deletePost, getComments, createComment, deleteComment, Comment, getLikeStatus, likePost, unlikePost } from "../api";
 
 interface FeedCardProps {
   title: string;
@@ -33,15 +33,9 @@ function FeedCard({ title, text, topics = [], postId, user, authorId, onDelete }
   useEffect(() => {
     const fetchLikeData = async () => {
       try {
-        if (currentUser) {
-          const status = await getLikeStatus(postId);
-          setLikeCount(status.count);
-          setLiked(status.liked);
-        } else {
-          const count = await getLikeCount(postId);
-          setLikeCount(count);
-          setLiked(false);
-        }
+        const status = await getLikeStatus(postId);
+        setLikeCount(status.count);
+        setLiked(currentUser ? status.liked : false);
       } catch (error) {
         console.error("Failed to fetch like data:", error);
         setError("Failed to fetch like data");

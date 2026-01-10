@@ -104,11 +104,6 @@ export async function getLikeStatus(postId: number): Promise<LikeStatus> {
   return response.data;
 }
 
-export async function getLikeCount(postId: number): Promise<number> {
-  const response = await axios.get<{ count: number }>(`${LIKES_URL}/likes/post/${postId}/count`);
-  return response.data.count;
-}
-
 export async function likePost(postId: number): Promise<void> {
   await axios.post(`${LIKES_URL}/likes`, { postId });
 }
