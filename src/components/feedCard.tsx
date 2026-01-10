@@ -4,7 +4,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { Button, Form } from "react-bootstrap";
 import { useAuth } from "../auth";
-import { deletePost, getComments, createComment, deleteComment, Comment } from "../api";
+import { deletePost, getComments, createComment, deleteComment, Comment, getLikeStatus, getLikeCount, likePost, unlikePost } from "../api";
 
 interface FeedCardProps {
   title: string;
@@ -33,8 +33,15 @@ function FeedCard({ title, text, topics = [], postId, user, authorId, onDelete }
   useEffect(() => {
     const fetchLikeData = async () => {
       try {
-    
-
+        if (currentUser) {
+          const status = await getLikeStatus(postId);
+          setLikeCount(status.count);
+          setLiked(status.liked);
+        } else {
+          const count = await getLikeCount(postId);
+          setLikeCount(count);
+          setLiked(false);
+        }
       } catch (error) {
         console.error("Failed to fetch like data:", error);
         setError("Failed to fetch like data");
@@ -42,7 +49,7 @@ function FeedCard({ title, text, topics = [], postId, user, authorId, onDelete }
     };
 
     fetchLikeData();
-  }, [postId]);
+  }, [postId, currentUser]);
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -117,11 +124,20 @@ function FeedCard({ title, text, topics = [], postId, user, authorId, onDelete }
   const toggleComments = () => setShowComments((prev) => !prev);
 
   const handleLike = async () => {
+    if (!currentUser) {
+      setError("You must be logged in to like");
+      return;
+    }
+
     try {
       const newLiked = !liked;
       setLiked(newLiked);
       setLikeCount((prev) => (newLiked ? prev + 1 : prev - 1));
-
+      if (newLiked) {
+        await likePost(postId);
+      } else {
+        await unlikePost(postId);
+      }
     } catch (error) {
       console.error("Failed to update like:", error);
       setLiked(liked);

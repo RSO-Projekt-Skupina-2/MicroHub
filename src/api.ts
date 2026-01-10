@@ -5,6 +5,7 @@ axios.defaults.withCredentials = true;
 const POSTS_URL = import.meta.env.VITE_POSTS_SERVICE_URL;
 const USERS_URL = import.meta.env.VITE_USERS_SERVICE_URL;
 const COMMENTS_URL = import.meta.env.VITE_COMMENTS_SERVICE_URL;
+const LIKES_URL = import.meta.env.VITE_LIKES_SERVICE_URL;
 const HEALTH_URL = import.meta.env.VITE_SERVERLESS_FUNCTION_URL;
 const TOKEN_STORAGE_KEY = "microhub.auth.token";
 
@@ -35,6 +36,11 @@ export type Comment = {
   authorName?: string;
   text: string;
   createdAt?: string;
+};
+
+export type LikeStatus = {
+  count: number;
+  liked: boolean;
 };
 
 export type HealthStatus = {
@@ -81,6 +87,24 @@ export async function createPost(payload: {
 
 export async function deletePost(postId: number): Promise<void> {
   await axios.delete(`${POSTS_URL}/posts/${postId}`);
+}
+
+export async function getLikeStatus(postId: number): Promise<LikeStatus> {
+  const response = await axios.get<LikeStatus>(`${LIKES_URL}/likes/post/${postId}/status`);
+  return response.data;
+}
+
+export async function getLikeCount(postId: number): Promise<number> {
+  const response = await axios.get<{ count: number }>(`${LIKES_URL}/likes/post/${postId}/count`);
+  return response.data.count;
+}
+
+export async function likePost(postId: number): Promise<void> {
+  await axios.post(`${LIKES_URL}/likes`, { postId });
+}
+
+export async function unlikePost(postId: number): Promise<void> {
+  await axios.delete(`${LIKES_URL}/likes`, { data: { postId } });
 }
 
 export async function getComments(postId: number): Promise<Comment[]> {
