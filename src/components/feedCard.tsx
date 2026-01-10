@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import UserIcon from "../assets/User Profile 02.svg";
 import "../styles/feed.css";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import { Button } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { useAuth } from "../auth";
-import { deletePost } from "../api";
+import { deletePost, getComments, createComment, deleteComment, Comment } from "../api";
 
 interface FeedCardProps {
   title: string;
@@ -22,6 +21,11 @@ function FeedCard({ title, text, topics = [], postId, user, authorId, onDelete }
   const [liked, setLiked] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<boolean>(false);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [commentsLoading, setCommentsLoading] = useState<boolean>(false);
+  const [commentText, setCommentText] = useState<string>("");
+  const [commentSubmitting, setCommentSubmitting] = useState<boolean>(false);
+  const [showComments, setShowComments] = useState<boolean>(false);
   const { user: currentUser } = useAuth();
   const username = String(user ?? "User");
   const isOwner = currentUser && authorId && Number(currentUser.id) === Number(authorId);
@@ -40,6 +44,23 @@ function FeedCard({ title, text, topics = [], postId, user, authorId, onDelete }
     fetchLikeData();
   }, [postId]);
 
+  useEffect(() => {
+    const fetchComments = async () => {
+      setCommentsLoading(true);
+      try {
+        const data = await getComments(postId);
+        setComments(data);
+      } catch (err) {
+        console.error("Failed to fetch comments:", err);
+        setError("Failed to fetch comments");
+      } finally {
+        setCommentsLoading(false);
+      }
+    };
+
+    fetchComments();
+  }, [postId]);
+
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this post?")) {
       return;
@@ -55,6 +76,45 @@ function FeedCard({ title, text, topics = [], postId, user, authorId, onDelete }
       setDeleting(false);
     }
   };
+
+  const handleAddComment = async () => {
+    const trimmed = commentText.trim();
+    if (!trimmed) {
+      return;
+    }
+
+    if (!currentUser) {
+      setError("You must be logged in to comment");
+      return;
+    }
+
+    try {
+      setCommentSubmitting(true);
+      const newComment = await createComment({ postId, text: trimmed });
+      setComments((prev) => [...prev, newComment]);
+      setCommentText("");
+    } catch (err) {
+      console.error("Failed to add comment:", err);
+      setError("Failed to add comment");
+    } finally {
+      setCommentSubmitting(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId: number) => {
+    try {
+      if (!confirm("Delete this comment?")) {
+        return;
+      }
+      await deleteComment(commentId);
+      setComments((prev) => prev.filter((c) => c.id !== commentId));
+    } catch (err) {
+      console.error("Failed to delete comment:", err);
+      setError("Failed to delete comment");
+    }
+  };
+
+  const toggleComments = () => setShowComments((prev) => !prev);
 
   const handleLike = async () => {
     try {
@@ -91,6 +151,74 @@ function FeedCard({ title, text, topics = [], postId, user, authorId, onDelete }
       <Row className="post-card-text">
         <p>{text}</p>
       </Row>
+      <div className="comments-section mt-2 p-2 rounded border" style={{ backgroundColor: "#f8f9fa" }}>
+        <div className="d-flex justify-content-between align-items-center mb-1">
+          <span className="fw-bold">Comments ({comments.length})</span>
+          <div className="d-flex align-items-center gap-2">
+            {commentsLoading && <small className="text-muted">Loading...</small>}
+            <Button
+              variant="light"
+              size="sm"
+              onClick={toggleComments}
+              className="d-flex align-items-center"
+            >
+              {showComments ? "Hide" : "Show"} <span className="ms-1">{showComments ? "▲" : "▼"}</span>
+            </Button>
+          </div>
+        </div>
+        {showComments && (
+          <>
+            <div className="comments-list mt-2">
+              {comments.length === 0 ? (
+                <small className="text-muted">No comments yet.</small>
+              ) : (
+                comments.map((comment) => {
+                  const canDelete = currentUser && Number(currentUser.id) === Number(comment.userId);
+                  return (
+                    <div key={comment.id} className="d-flex justify-content-between align-items-start mb-2 p-2 rounded" style={{ backgroundColor: "#ffffff" }}>
+                      <div>
+                        <div className="fw-semibold">{comment.authorName || comment.userId}</div>
+                        <div>{comment.text}</div>
+                      </div>
+                      {canDelete && (
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          onClick={() => handleDeleteComment(comment.id)}
+                          title="Delete comment"
+                        >
+                          ✕
+                        </Button>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+            <Form className="mt-2">
+              <div className="d-flex gap-2 align-items-start">
+                <Form.Control
+                  as="textarea"
+                  rows={2}
+                  placeholder={currentUser ? "Add a comment" : "Log in to comment"}
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  disabled={!currentUser || commentSubmitting}
+                />
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleAddComment}
+                  disabled={commentSubmitting || !commentText.trim() || !currentUser}
+                  className="d-flex align-items-center"
+                >
+                  {commentSubmitting ? "Posting..." : "Post"}
+                </Button>
+              </div>
+            </Form>
+          </>
+        )}
+      </div>
       <Row className="post-card-footer">
         <Col className="d-flex justify-content-start align-items-center">
           <Button

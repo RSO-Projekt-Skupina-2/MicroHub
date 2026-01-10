@@ -4,6 +4,7 @@ axios.defaults.withCredentials = true;
 
 const POSTS_URL = import.meta.env.VITE_POSTS_SERVICE_URL;
 const USERS_URL = import.meta.env.VITE_USERS_SERVICE_URL;
+const COMMENTS_URL = import.meta.env.VITE_COMMENTS_SERVICE_URL;
 const HEALTH_URL = import.meta.env.VITE_SERVERLESS_FUNCTION_URL;
 const TOKEN_STORAGE_KEY = "microhub.auth.token";
 
@@ -25,6 +26,15 @@ export type AuthUser = {
 export type LoginResponse = {
   token: string;
   user: AuthUser;
+};
+
+export type Comment = {
+  id: number;
+  postId: number;
+  userId: number | string;
+  authorName?: string;
+  text: string;
+  createdAt?: string;
 };
 
 export type HealthStatus = {
@@ -71,6 +81,20 @@ export async function createPost(payload: {
 
 export async function deletePost(postId: number): Promise<void> {
   await axios.delete(`${POSTS_URL}/posts/${postId}`);
+}
+
+export async function getComments(postId: number): Promise<Comment[]> {
+  const response = await axios.get<Comment[]>(`${COMMENTS_URL}/comments/post/${postId}`);
+  return response.data;
+}
+
+export async function createComment(payload: { postId: number; text: string; }): Promise<Comment> {
+  const response = await axios.post<Comment>(`${COMMENTS_URL}/comments`, payload);
+  return response.data;
+}
+
+export async function deleteComment(commentId: number): Promise<void> {
+  await axios.delete(`${COMMENTS_URL}/comments/${commentId}`);
 }
 
 export async function login(email: string, password: string): Promise<LoginResponse> {
