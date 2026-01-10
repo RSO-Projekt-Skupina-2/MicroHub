@@ -94,9 +94,12 @@ function FeedCard({ title, text, topics = [], postId, user, authorId, onDelete }
       const newComment = await createComment({ postId, text: trimmed });
       setComments((prev) => [...prev, newComment]);
       setCommentText("");
-    } catch (err) {
+    } catch (err: any) {
+      const message = err?.response?.data?.error || err?.message || "Failed to add comment";
       console.error("Failed to add comment:", err);
-      setError("Failed to add comment");
+      setError(message);
+      // Clear error after 5 seconds
+      setTimeout(() => setError(null), 5000);
     } finally {
       setCommentSubmitting(false);
     }
