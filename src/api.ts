@@ -6,6 +6,7 @@ const POSTS_URL = import.meta.env.VITE_POSTS_SERVICE_URL;
 const USERS_URL = import.meta.env.VITE_USERS_SERVICE_URL;
 const COMMENTS_URL = import.meta.env.VITE_COMMENTS_SERVICE_URL;
 const LIKES_URL = import.meta.env.VITE_LIKES_SERVICE_URL;
+const PROFILE_URL = import.meta.env.VITE_PROFILE_SERVICE_URL;
 const HEALTH_URL = import.meta.env.VITE_SERVERLESS_FUNCTION_URL;
 const TOKEN_STORAGE_KEY = "microhub.auth.token";
 
@@ -48,6 +49,15 @@ export type HealthStatus = {
   service: string;
   component: string;
   timestamp: string;
+};
+
+export type ProfileSummary = {
+  id: number;
+  username: string;
+  email: string;
+  postsCount: number;
+  likesGivenCount: number;
+  commentsCount: number;
 };
 
 export type CreateUserPayload = {
@@ -138,6 +148,12 @@ export async function fetchCurrentUser(): Promise<AuthUser> {
   const response = await axios.get<AuthUser>(`${USERS_URL}/users/me`);
   return response.data;
 }
+
+export async function fetchMyProfile(): Promise<ProfileSummary> {
+  const response = await axios.get<ProfileSummary>(`${PROFILE_URL}/profile/me`);
+  return response.data;
+}
+
 
 export async function getHealth(): Promise<HealthStatus> {
   try {
