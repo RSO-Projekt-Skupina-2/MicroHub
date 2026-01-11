@@ -1,152 +1,174 @@
-# Naslov projekta: MicroHub
+# MicroHub Frontend
 
-## Ime skupine: Hub Devs (Skupina 2)
-Člani:
-- Jan Gračner
-- Marko Horvat
+React-based frontend for the MicroHub social media platform.
 
-## Namen in cilji projekta:
-### Opis projekta:
-Spletna stran MicroHub je preprosta družbena platforma, zasnovana kot alternativa sodobnim družbenim omrežjem, ki so postala preobremenjena z nepotrebnimi funkcijami in oglaševanjem. Namen projekta je razviti "cloud native" aplikacijo, ki ponovno vzpostavlja bistvo interakcij na družabnih omrežjih: deljenje objav, všečkanje, komentiranje ter prejemanje obvestil o dejavnostih drugih uporabnikov.
+## Overview
 
-### Problem, ki ga naša rešitev naslavlja:
-Problem, ki ga projekt MicroHub rešuje, je prezasičenost sodobnih družbenih omrežij z vsebinami, oglaševanjem in nepotrebnimi funkcijami, ki zmanjšujejo pristnost interakcij med uporabniki. Zaradi tega se uporabniška izkušnja pogosto poslabša, družbena omrežja pa izgubljajo svoj prvotni namen – preprosto in neposredno povezovanje ljudi.
-MicroHub ponuja rešitev v obliki minimalistične spletne platforme, ki se osredotoča na osnovne elemente družbene interakcije in s tem uporabnikom omogoča čistejšo, hitrejšo in bolj pristno komunikacijo.
+Single-page application built with React, TypeScript, and Vite. Provides user interface for authentication, creating posts, commenting, liking, and viewing profiles.
 
-## Ogrodje in razvojno okolje:
+## Technology Stack
 
-### Frontend:
-- **React (TypeScript, Vite):** za izdelavo uporabniškega vmesnika naše spletne aplikacije. Uporabniški vmesnik bo z mikrostoritvami komuniciral preko REST API klicev. Prav tako bo klical tudi potrebne zunanje API-je (npr. DiceBear za avatarje in profilne slike).
+- **React** - UI framework
+- **React Router** - Client-side routing
+- **Vite** - Build tool and dev server
+- **TypeScript** - Type-safe development
+- **Axios** - HTTP client
+- **Bootstrap** - CSS framework
+- **React Bootstrap** - React components
 
-### Backend (mikrostoritve):
-- **Node.js (TypeScript):** izvajalno okolje, v katerem bodo delovale vse mikrostoritve. Vsaka mikrostoritev (Users, Posts, Likes, ...) bo samostojen Node.js program, zapakiran v Docker kontejner.
-- **Express.js:** knjižnica, ki bo uporabljena znotraj vsake mikrostoritve za definiranje REST endpointov, obdelavo HTTP zahtev, validacijo in obdelavo podatkov ter komunikacijo z drugimi mikrostoritvami in bazo.
+## Quick Start
 
-### Podatkovna baza:
-- **PostgreSQL:** za shranjevanje podatkov. Centralna relacijska podatkovna baza, kjer bo vsaka mikrostoritev imela svojo lastno shemo oziroma instanco, da ohranimo neodvisnost mikrostoritev.
+```bash
+# Navigate to root directory (Microhub)
+# Install dependencies
+npm install
 
-### Infrastruktura:
-- **Docker:** za pakiranje vsake mikrostoritve v svoj/neodvisen vsebnik
-- **Kubernetes:** za izvajanje in upravljanje mikrostoritev, zapakiranih v Docker slike (images), v clound-native okolju.
-- **Azure Cloud Computing Services:** pri projektu bo storitev uporabljena kot oblačna platforma za gostovanje, izvajanje in upravljanje celotne aplikacije.
+# Development server
+npm run dev
+# Access at: http://localhost:5173
+```
 
-### Razvojno okolje:
-- **VS Code:** osrednje razvojno okolje za pisanje, testiranje in rashroščevanje kode (frontend in backend). Integrirano orodje za delo z Gitom, Dockerjem in Kubernetesom.
-- **GitHub:** Služil bo kot repozitoriji za shranjevanje, deljenje in verzioniranje izvorne kode, sodelovanje med člani ekipe, CI/CD avtomatizacijo in dokumentacijo projekta.
+## Environment Variables
 
-## Shema arhitekture:
-![Začetna shema arhitekture aplikacije MicroHub](zacetnaShema.jpg)
+Create `.env` in the MicroHub directory:
 
-## Seznam funkcionalnosti mikrostoritev:
-### 1. Users
-Mikrostoritev za kreiranje, upravljanje in avtentikacijo uporabnikov. Skrbi za registracijo, prijavo, varno shranjevanje gesel ter razmerja med uporabniki (npr. prijateljstva, sledenje).
+```bash
+VITE_POSTS_SERVICE_URL=http://localhost:3000
+VITE_USERS_SERVICE_URL=http://localhost:3002
+VITE_COMMENTS_SERVICE_URL=http://localhost:3003
+VITE_LIKES_SERVICE_URL=http://localhost:3001
+VITE_PROFILE_SERVICE_URL=http://localhost:3004
+```
+Backend repository: https://github.com/RSO-Projekt-Skupina-2/Services
 
-Glavne funkcionalnosti:
-- Registracija novega uporabnika (e-pošta, uporabniško ime, geslo)
-- Prijava in avtentikacija uporabnika (npr. preko izdaje JWT žetonov)
-- Preverjanje in obnavljanje prijave (session management)
-- Sledenje in prenehanje sledenja drugim uporabnikom: pošiljanje sporočila **user.followed** mikrostoritvi za obvestila
-- Validacija dostopa prek JWT pri drugih mikrostoritvah
+## Project Structure
 
-### 2. Posts
-Mikrostoritev, ki upravlja objave uporabnikov: ustvarjanje, branje, urejanje in brisanje objav.
-Poleg tega omogoča označevanje objav s temami (tagi) in integracijo z obvestili.
+```
+MicroHub/
+├── src/
+│   ├── main.tsx              # App entry point
+│   ├── api.ts                # API client configuration
+│   ├── auth.tsx              # Authentication context
+│   ├── components/           # Reusable components
+│   │   ├── loginForm.tsx
+│   │   ├── createUserForm.tsx
+│   │   ├── feedCard.tsx
+│   │   ├── mainHeader.tsx
+│   │   ├── searchComponent.tsx
+│   │   └── ...
+│   ├── pages/                # Page components
+│   │   ├── LoginPage.tsx
+│   │   ├── CreateUser.tsx
+│   │   ├── FeedPage.tsx
+│   │   ├── ProfilePage.tsx
+│   │   └── CreatePost.tsx
+│   └── styles/               # CSS files
+│       ├── App.css
+│       ├── feed.css
+│       └── ...
+├── serverless-function/      # Azure Functions
+│   └── src/functions/health.ts
+├── index.html
+├── vite.config.ts
+├── tsconfig.json
+├── package.json
+└...
+```
 
-Glavne funkcionalnosti:
-- Ustvarjanje nove objave
-- Brisanje in urejanje lastnih objav
-- Pridobivanje objav posameznega uporabnika
-- Prikaz objav vseh uporabnikov ali po temah (feed)
-- Iskanje objav po ključnih besedah ali tagih
-- Pošilanje sporočila **post.created** mikrostoritvi za obvestila
-- Shranjevanje metapodatkov za vsako objavo (npr. število všečkov, komentarjev)
+## Architecture
 
-### 3. Likes
-Mikrostoritev za všečkanje objav.
+### Routing
 
-Glavne funkcionalnosti:
-- Dodajanje in odstranjevanje všečka na objavi
-- Preverjanje, ali je uporabnik že všečkal objavo
-- Štetje skupnega števila všečkov za posamezno objavo
-- Pošilanje sporočila **post.liked** mikrostoritvi za obvestila
+Routes are defined in `main.tsx` using React Router:
 
-### 4. Comments
-Mikrostoritev, ki omogoča komentiranje objav.
+- `/login` - Login page
+- `/newUser` - User registration
+- `/` - Main feed (protected)
+- `/profile` - User profile (protected)
+- `/newPost` - Create new post (protected)
 
-Glavne funkcionalnosti:
-- Dodajanje komentarjev pod objavo
-- Brisanje lastnih komentarjev
-- Pridobivanje vseh komentarjev za izbrano objavo
-- Pošilanje sporočila **post.commented** mikrostoritvi za obvestila
+Protected routes require authentication (JWT token in localStorage).
 
-### 5. Notifications
-Mikrostoritev za pošiljanje obvestil uporabnikom, kadar nekdo všečka ali komentira njegovo objavo ter ko nekdo začne slediti njegovemu profilu. Sprejema dogodke iz drugih storitev preko message brokerja (npr. RabbitMQ).
+### Authentication Flow
 
-Glavne funkcionalnosti:
-- Sprejem in obdelava sporočil **post.liked**, **post.commented**, **post.created** in **user.followed**
-- Pošiljanje obvestil uporabnikom v aplikaciji in (po želji) tudi preko e-pošte ter potisnih obvestil
-- Prikaz seznama neprebranih obvestil
-- Označevanje obvestil kot prebranih
-- Brisanje starih obvestil po določenem času
+1. **Login**: User enters credentials → `POST /users/login` → Receive JWT token
+2. **Token Storage**: Token saved to `localStorage`
+3. **Protected Routes**: `ProtectedRoute` component checks for token
+4. **API Calls**: Token attached to requests via `Authorization: Bearer {token}`
+5. **Logout**: Clear token from localStorage
+
+## Key Components
+
+### `loginForm.tsx`
+- Login form with email/password
+- Calls `/users/login` endpoint
+- Stores JWT token on success
+
+### `createUserForm.tsx`
+- Registration form
+- Validates password length (min 6 chars)
+- Calls `/users/register` endpoint
+
+### `feedCard.tsx`
+- Displays individual post
+- Shows likes count and user's like status
+- Allows commenting
+- Delete button for post author
+
+### `mainHeader.tsx`
+- Navigation bar
+- Search functionality
+- Topic filtering
+- Logout button
+
+### `ProtectedRoute.tsx`
+- Route guard for authenticated pages
+- Redirects to login if no token found
+
+## Pages
+
+### LoginPage
+- Default landing page
+- Login and registration forms
+- Redirects to feed on successful auth
+
+### CreateUserPage
+- Page for registering new users
+
+### FeedPage
+- Main feed displaying all posts
+- Filter by topic
+- Pagination
+- Create new post button
+
+### ProfilePage
+- User statistics (post count, likes, comments)
+- User information
+- Aggregated data from Profile service
+
+### CreatePost
+- Form to create new post
+- Title, content, topics
+- Topic selection (predefined list)
+
+## CI/CD Pipeline
+
+GitHub Actions automatically builds and deploys the frontend to Azure Kubernetes Service (AKS) on every push to main.
+
+### Workflow
+1. Build Docker image for React app
+2. Push to Azure Container Registry (ACR)
+3. Deploy to Kubernetes cluster in `ingress` namespace
+
+### Required Secrets
+Set these in GitHub repository settings → Secrets:
+- `ACR_LOGIN_SERVER` - Azure Container Registry URL
+- `ACR_USERNAME` - ACR username
+- `ACR_PASSWORD` - ACR password
+- `KUBECONFIG_DATA` - Base64 encoded kubeconfig
+- `INGRESS_URL` - Your Ingress controller external IP
+- `SERVERLESS_FUNCTION_URL` - Your serverless function address
 
 
-### 6. User Profiles
-Mikrostoritev za prikazovanje svojega osebnega profila oziroma profila prijateljev, ki vsebuje statistiko in analitiko, torej prikaz števila objav, všečkov, komentarjev ter rasti dejavnosti.
 
-Glavne funkcionalnosti:
-- Prikaz podatkov o uporabniku (javna stran profila)
-- Urejanje uporabniškega profila (opis, slika, ime, lokacija ipd.)
-- Pridobivanje osnovne statistike profila - število objav, všečkov, komentarjev
-- Pridobivanje seznama sledilcev in sledenih uporabnikov
-- Generiranje tedenskih ali mesečnih poročil o aktivnosti
-- Agregacija podatkov iz *Posts*, *Likes* in *Comments* storitev
-- Generiranje grafov aktivnosti uporabnika (npr. dnevni graf dejavnosti)
-- Možnost kasnejše integracije z vizualizacijo (npr. Grafana)
 
-## Primeri uporabe:
-### Okvirni primeri uporabe:
-#### 1. Registracija uporabnika
-Uporabnik izpolni obrazec za registracijo (uporabniško ime, e-pošta, geslo). Mikrostoritev *Users* preveri, ali uporabnik že obstaja, shrani podatke v bazo (PostgreSQL) in vrne potrditev o uspešni registraciji.
-
-#### 2. Prijava uporabnika
-Uporabnik vnese prijavne podatke. Mikrostoritev *Users* preveri uporabniško ime in geslo, ustvari JWT žeton (avtentikacija) ter ga pošlje aplikaciji, ki ga uporablja za izvajanje nadaljnjih zahtev.
-
-#### 3. Ustvarjanje objave
-Uporabnik napiše besedilo objave in po želji doda sliko. Mikrostoritev *Posts* shrani objavo v bazo in sproži asinhroni dogodek **post.created**, ki ga kasneje uporabijo *Notifications* in *User Profiles* mikrostoritve.
-
-#### 4. Všečkanje objave
-Uporabnik klikne gumb za "všečkanje" objave. Mikrostoritev *Likes* zabeleži všeček v bazi in sproži dogodek **post.liked**, ki ga *Notifications* uporabi za obvestilo avtorju objave.
-
-#### 5. Komentiranje objave
-Uporabnik napiše komentar pod objavo. Mikrostoritev *Comments* shrani komentar in sproži dogodek **post.commented**, ki ga *Notifications* uporabi za obveščanje avtorja objave.
-
-#### 6. Sledenje drugemu uporabniku
-Uporabnik klikne gumb "Sledi" pod profilom nekega uporabnika. Mikrostoritev *Users* zabeleži odnos med uporabnikoma in sproži dogodek **user.followed**, ki ga *Notifications* uporabi za pošiljanje obvestila slednjemu uporabniku.
-
-#### 7. Ogled profila
-Uporabnik odpre profil drugega uporabnika. Mikrostoritev *User Profiles* vrne osnovne podatke o profilu in podatke o aktivnosti (število objav, všečkov, komentarjev).
-
-#### 8. Prejem obvestil
-Ko nek drug uporabnik všečka, komentira ali začne slediti profilu uporabnika, mikrostoritev *Notifications* pošlje obvestilo uporabniku v aplikacijo ali preko API klicev na e-pošto ozirma preko potisnih sporočil.
-
-### Kompleksnejši primer uporabe:
-#### "Uporabnik všečka objavo drugega uporabnika"
-Akterji:
-- Uporabnik A (avtor objave)
-- Uporabnik B (všečka objavo)
-
-Opis scenarija:
-1. Uporabnik B na uporabniškem vmesniku svoje aplikacije klikne “Všečkaj” pod objavo uporabnika A.
-2. Uporabniški vmesnik preko REST API klicev mikrostoritve obvesti o dogodku (npr. **POST /api/v1/posts/:id/like**).
-4. Mikrostoritev *Users* ustrezno identificira prejemnika dogodka - všečkanje objave.
-3. Mikrostoritev *Likes* zabeleži všeček v bazo in pošlje sporočilo **post.liked**.
-4. Sporočilo **post.liked** se pošlje prek message brokerja (npr. RabbitMQ).
-5. Mikrostoritev *Notifications* prejme dogodek, ustvari obvestilo za uporabnika A in ga shrani v svojo bazo.
-6. V aplikaciji uporabnika A *Notifications* prek uporabniškega vmesnika pošlje obvestilo v realnem času (“Uporabnik B je všečkal tvojo objavo”). Opcijsko se obvestilo lahko pošlje tudi preko e-pošte in potisnih obvestil.
-7. Mikrostoritev *User Profiles* posodobi statistiko uporabnika A (npr. +1 všeček pod relevantno objavo).
-
-Vključene mikrostoritve:
-- **Likes:** logika za všečkanje objave
-- **Notifications:** prejem dogodka in ustvarjanje obvestila
-- **Users:** identifikacija prejemnika obvestila
-- **User Profiles:** posodobitev statistike
