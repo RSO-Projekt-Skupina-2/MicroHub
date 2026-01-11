@@ -17,6 +17,19 @@ spec:
         image: microhubacr.azurecr.io/microhub-frontend:7.2
         ports:
         - containerPort: 3000
+        env:
+          - name: VITE_POSTS_SERVICE_URL
+            value: "http://9.235.155.69"
+          - name: VITE_USERS_SERVICE_URL
+            value: "http://9.235.155.69"
+          - name: VITE_COMMENTS_SERVICE_URL
+            value: "http://9.235.155.69"
+          - name: VITE_LIKES_SERVICE_URL
+            value: "http://9.235.155.69"
+          - name: VITE_PROFILE_SERVICE_URL
+            value: "http://9.235.155.69"
+          - name: VITE_SERVERLESS_FUNCTION_URL
+            value: "https://microhub-serverless-function-efemgng7gmamf2ev.italynorth-01.azurewebsites.net/api/health"
 ---
 apiVersion: v1
 kind: Service
