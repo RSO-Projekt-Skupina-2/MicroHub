@@ -30,7 +30,7 @@ jobs:
           --build-arg VITE_COMMENTS_SERVICE_URL=${{ secrets.INGRESS_URL }} \
           --build-arg VITE_LIKES_SERVICE_URL=${{ secrets.INGRESS_URL }} \
           --build-arg VITE_PROFILE_SERVICE_URL=${{ secrets.INGRESS_URL }} \
-          --build-arg VITE_SERVERLESS_FUNCTION_URL=${{ secrets.INGRESS_URL }} \
+          --build-arg VITE_SERVERLESS_FUNCTION_URL=${{ secrets.SERVERLESS_FUNCTION_URL }} \
           -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
 
     - name: Push Docker image
