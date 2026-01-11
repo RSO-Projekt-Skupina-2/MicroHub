@@ -51,7 +51,7 @@ spec:
           service:
             name: microhub-moderation-service
             port:
-              number: 3000
+              number: 3005
       # Frontend catch-all (MUST be last)
       - path: /
         pathType: Prefix

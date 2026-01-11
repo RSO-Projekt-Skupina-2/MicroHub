@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: microhub-frontend
-        image: microhubacr.azurecr.io/microhub-frontend:3.0
+        image: microhubacr.azurecr.io/microhub-frontend:7.2
         ports:
         - containerPort: 3000
 ---
