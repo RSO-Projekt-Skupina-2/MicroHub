@@ -166,6 +166,8 @@ Set these in GitHub repository settings → Secrets:
 - `ACR_USERNAME` - ACR username
 - `ACR_PASSWORD` - ACR password
 - `KUBECONFIG_DATA` - Base64 encoded kubeconfig
+- `INGRESS_URL` - Your Ingress controller external IP
+- `SERVERLESS_FUNCTION_URL` - Your serverless function address
 
 
 
