@@ -151,6 +151,127 @@ Protected routes require authentication (JWT token in localStorage).
 - Title, content, topics
 - Topic selection (predefined list)
 
+
+## Deployment
+
+This section describes how to deploy the MicroHub frontend application using Docker, Azure Container Registry (ACR), and Azure Kubernetes Service (AKS).
+
+### Prerequisites
+
+- Azure account with AKS cluster provisioned
+- Azure Container Registry (ACR) set up
+- `kubectl` installed and configured
+- `docker` installed and configured
+- GitHub repository with secrets configured (see **CI/CD Pipeline** section)
+- Optional: `cert-manager` installed in your cluster for HTTPS certificates
+
+### Docker Build
+
+Build the Docker image locally or as part of the CI/CD pipeline:
+
+```bash
+# Navigate to frontend directory
+cd MicroHub
+
+# Build Docker image
+docker build -t microhub-frontend:latest .
+
+# (Optional) Tag image for ACR
+docker tag microhub-frontend:latest <ACR_LOGIN_SERVER>/microhub-frontend:latest
+
+# Push to ACR
+docker push <ACR_LOGIN_SERVER>/microhub-frontend:latest
+
+### Kubernetes Deployment
+
+1. Apply the deployment configuration:
+
+```bash
+kubectl apply -f deployment.yaml
+```
+
+* This creates a Deployment with 2 replicas of the frontend pod.
+* Environment variables are injected for all backend services and serverless function.
+* Pods expose port `3000` internally.
+
+2. Create the Service:
+
+```bash
+kubectl apply -f deployment.yaml
+```
+
+* ClusterIP service exposes the frontend pods within the cluster.
+* Port `80` is used by the Ingress to route traffic.
+
+3. Apply Ingress:
+
+```bash
+kubectl apply -f ingress.yaml
+```
+
+* NGINX Ingress routes HTTP traffic to backend and frontend services.
+* Paths `/posts`, `/users`, `/likes`, `/comments`, `/profile`, `/moderation` route to respective services.
+* Path `/` routes to the frontend service (catch-all).
+* Disable SSL redirect in annotations for development or internal deployments.
+* For production, enable TLS with `ClusterIssuer` and update annotations.
+
+4. (Optional) Setup HTTPS with cert-manager:
+
+```bash
+kubectl apply -f clusterIssuer.yaml
+```
+
+* Configures Let's Encrypt ACME issuer to automatically generate TLS certificates.
+* Ingress can reference this issuer to enable HTTPS.
+
+### Verifying Deployment
+
+* Check pods and services:
+
+```bash
+kubectl get pods -n ingress
+kubectl get svc -n ingress
+kubectl get ingress -n ingress
+```
+
+* Access the frontend via the Ingress external IP:
+
+```
+http://<INGRESS_URL>/
+```
+
+### Updating Deployment
+
+* Update Docker image:
+
+```bash
+docker build -t <ACR_LOGIN_SERVER>/microhub-frontend:<TAG> .
+docker push <ACR_LOGIN_SERVER>/microhub-frontend:<TAG>
+```
+
+* Update deployment in Kubernetes:
+
+```bash
+kubectl set image deployment/microhub-frontend microhub-frontend=<ACR_LOGIN_SERVER>/microhub-frontend:<TAG> -n ingress
+kubectl rollout status deployment/microhub-frontend -n ingress
+```
+
+* Verify the rollout:
+
+```bash
+kubectl get pods -n ingress
+```
+
+### Notes
+
+* Frontend is designed as a single-page application; ensure the Ingress catch-all path (`/`) is last to avoid conflicts with API routes.
+* Environment variables are critical for connecting to backend services. Update `deployment.yaml` or local .env files if services run on different IPs or URLs.
+* Scale the frontend deployment by changing `replicas` in `deployment.yaml` or via `kubectl scale`:
+
+```bash
+kubectl scale deployment/microhub-frontend --replicas=3 -n ingress
+```
+
 ## CI/CD Pipeline
 
 GitHub Actions automatically builds and deploys the frontend to Azure Kubernetes Service (AKS) on every push to main.
