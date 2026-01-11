@@ -151,6 +151,23 @@ Protected routes require authentication (JWT token in localStorage).
 - Title, content, topics
 - Topic selection (predefined list)
 
+## CI/CD Pipeline
+
+GitHub Actions automatically builds and deploys the frontend to Azure Kubernetes Service (AKS) on every push to main.
+
+### Workflow
+1. Build Docker image for React app
+2. Push to Azure Container Registry (ACR)
+3. Deploy to Kubernetes cluster in `ingress` namespace
+
+### Required Secrets
+Set these in GitHub repository settings → Secrets:
+- `ACR_LOGIN_SERVER` - Azure Container Registry URL
+- `ACR_USERNAME` - ACR username
+- `ACR_PASSWORD` - ACR password
+- `KUBECONFIG_DATA` - Base64 encoded kubeconfig
+
+
 
 
 
